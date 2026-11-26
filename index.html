@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -108,20 +108,19 @@ const img = new Image();
 let imageReady = false;
 let generated = false;
 
-// SETTINGS: Adjust name position here
+// NAME POSITION SETTINGS
 const NAME_X = 540;
 const NAME_Y = 1300;
 
-// Name appearance
+// NAME STYLE
 const NAME_COLOR = "#316880";
-const FONT_SIZE = 48;
 const MAX_FONT_SIZE = 48;
 const MIN_FONT_SIZE = 22;
 const MAX_NAME_WIDTH = 750;
 
 img.onload = function() {
   imageReady = true;
-  ctx.drawImage(img, 0, 0, 1080, 1920);
+  drawOriginalCard();
 
   document.getElementById("status").textContent =
     "Your card is ready. Enter your name.";
@@ -129,12 +128,20 @@ img.onload = function() {
 
 img.onerror = function() {
   document.getElementById("status").textContent =
-    "Image not found. Check the image filename.";
+    "Image not found. Please check the image filename.";
 };
 
 img.src = "UAE National Day Greeting Card.png";
 
+// Draw original image
+function drawOriginalCard() {
+  ctx.clearRect(0, 0, 1080, 1920);
+  ctx.drawImage(img, 0, 0, 1080, 1920);
+}
+
+// Generate personalized card
 function generateCard() {
+
   const name = document.getElementById("employeeName").value.trim();
 
   if (!imageReady) {
@@ -147,14 +154,17 @@ function generateCard() {
     return;
   }
 
-  // Restore original card
-  ctx.clearRect(0, 0, 1080, 1920);
-  ctx.drawImage(img, 0, 0, 1080, 1920);
+  drawOriginalCard();
 
   ctx.save();
 
-  // Automatically adjust font size for long names
   let size = MAX_FONT_SIZE;
+
+  ctx.direction = "auto";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = NAME_COLOR;
+
   ctx.font = `bold ${size}px Arial`;
 
   while (
@@ -165,12 +175,7 @@ function generateCard() {
     ctx.font = `bold ${size}px Arial`;
   }
 
-  // Draw name
-  ctx.fillStyle = NAME_COLOR;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.direction = "rtl";
-
+  // NAME POSITION
   ctx.fillText(name, NAME_X, NAME_Y);
 
   ctx.restore();
@@ -178,11 +183,14 @@ function generateCard() {
   generated = true;
 
   document.getElementById("downloadButton").disabled = false;
+
   document.getElementById("status").textContent =
     "Your greeting card is ready to download!";
 }
 
+// Download PNG
 function downloadCard() {
+
   if (!generated) {
     generateCard();
   }
@@ -190,8 +198,11 @@ function downloadCard() {
   if (!generated) return;
 
   const link = document.createElement("a");
+
   link.download = "UAE-National-Day-Greeting.png";
+
   link.href = canvas.toDataURL("image/png");
+
   link.click();
 }
 </script>
